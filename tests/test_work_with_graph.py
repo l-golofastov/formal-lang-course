@@ -6,21 +6,21 @@ import networkx
 from project import work_with_graph
 
 
-def test_nodes_edges_labels_created_graph():
+def test_get_nodes_edges_labels_created_graph():
     graph = cfpq_data.labeled_cycle_graph(4, "a")
 
-    assert work_with_graph.nodes_edges_labels(graph) == (4, 4, {"a"})
+    assert work_with_graph.get_nodes_edges_labels(graph) == (4, 4, {"a"})
 
 
-def test_nodes_edges_labels_downloaded_graph():
+def test_get_nodes_edges_labels_downloaded_graph():
     bzip_path = cfpq_data.download("bzip")
     bzip = cfpq_data.graph_from_csv(bzip_path)
 
-    assert work_with_graph.nodes_edges_labels(bzip)[0] == 632
-    assert work_with_graph.nodes_edges_labels(bzip)[1] == 556
+    assert work_with_graph.get_nodes_edges_labels(bzip)[0] == 632
+    assert work_with_graph.get_nodes_edges_labels(bzip)[1] == 556
     assert True == (
-        work_with_graph.nodes_edges_labels(bzip)[2] == {"a", "d"}
-        or work_with_graph.nodes_edges_labels(bzip)[2] == {"d", "a"}
+        work_with_graph.get_nodes_edges_labels(bzip)[2] == {"a", "d"}
+        or work_with_graph.get_nodes_edges_labels(bzip)[2] == {"d", "a"}
     )
 
 

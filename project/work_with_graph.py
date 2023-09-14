@@ -3,7 +3,7 @@ import networkx
 import pydot
 
 
-def nodes_edges_labels(name):
+def get_nodes_edges_labels(name):
     nodes = name.number_of_nodes()
     edges = name.number_of_edges()
     labels = set(cfpq_data.get_sorted_labels(name))
