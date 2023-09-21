@@ -22,7 +22,7 @@ def save_two_cycles_graph(nodes_graph1, nodes_graph2, labels, file_path):
     return pydot_graph.write(path=file_path)
 
 
-def get_dfa_by_regex(expression):
+def create_dfa_by_regex(expression):
     regex = pyformlang.regular_expression.Regex(expression)
     enfa = regex.to_epsilon_nfa()
     dfa = enfa.to_deterministic()
@@ -31,22 +31,17 @@ def get_dfa_by_regex(expression):
     return minimal_dfa
 
 
-def get_nfa_by_graph(graph, start_nodes=[], final_nodes=[]):
+def create_nfa_by_graph(graph, start_nodes=None, final_nodes=None):
     nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
 
-    if start_nodes:
-        for node in start_nodes:
-            nfa.add_start_state(node)
-    else:
-        for node in list(graph.nodes):
-            nfa.add_start_state(node)
+    start_states = start_nodes if start_nodes is not None else list(graph.nodes)
+    final_states = final_nodes if final_nodes is not None else list(graph.nodes)
 
-    if final_nodes:
-        for node in final_nodes:
-            nfa.add_final_state(node)
-    else:
-        for node in list(graph.nodes):
-            nfa.add_final_state(node)
+    for state in start_states:
+        nfa.add_start_state(state)
+
+    for state in final_states:
+        nfa.add_final_state(state)
 
     for node1, node2, label in list(graph.edges(data=True)):
         state1 = pyformlang.finite_automaton.State(node1)

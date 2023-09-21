@@ -55,53 +55,53 @@ def test_save_two_cycles_graph_save_correction():
     os.remove("save_two_cycles_graph_output.dot")
 
 
-def test_get_dfa_by_regex_determinism():
-    dfa = work_with_graph.get_dfa_by_regex("abc|d")
+def test_create_dfa_by_regex_determinism():
+    dfa = work_with_graph.create_dfa_by_regex("abc|d")
 
     assert dfa.is_deterministic()
 
 
-def test_get_dfa_by_regex():
-    dfa = work_with_graph.get_dfa_by_regex("abc|d")
+def test_create_dfa_by_regex_acceptance():
+    dfa = work_with_graph.create_dfa_by_regex("abc|d")
 
     assert dfa.accepts(["abc"])
 
 
-def test_get_nfa_by_graph_without_start_final_nodes_created_by_download():
+def test_create_nfa_by_graph_without_start_final_nodes_created_by_download():
     bzip_path = cfpq_data.download("bzip")
     bzip = cfpq_data.graph_from_csv(bzip_path)
 
-    nfa = work_with_graph.get_nfa_by_graph(bzip)
+    nfa = work_with_graph.create_nfa_by_graph(bzip)
 
     assert nfa.accepts(["d"])
     assert nfa.accepts(["a", "a"])
 
 
-def test_get_nfa_by_graph_with_start_final_nodes_created_by_download():
+def test_create_nfa_by_graph_with_start_final_nodes_created_by_download():
     bzip_path = cfpq_data.download("bzip")
     bzip = cfpq_data.graph_from_csv(bzip_path)
 
-    nfa = work_with_graph.get_nfa_by_graph(bzip, [223, 102], [257, 422])
+    nfa = work_with_graph.create_nfa_by_graph(bzip, [223, 102], [257, 422])
 
     assert nfa.accepts(["d"])
     assert nfa.accepts(["a", "a"])
     assert not nfa.accepts(["d", "a"])
 
 
-def test_get_nfa_by_graph_without_start_final_nodes_created_by_function():
+def test_create_nfa_by_graph_without_start_final_nodes_created_by_function():
     graph = cfpq_data.labeled_two_cycles_graph(3, 4, labels=("a", "b"))
 
-    nfa = work_with_graph.get_nfa_by_graph(graph)
+    nfa = work_with_graph.create_nfa_by_graph(graph)
 
     assert nfa.accepts(["a"])
     assert nfa.accepts(["b", "a"])
     assert nfa.accepts(["a", "b"])
 
 
-def test_get_nfa_by_graph_with_start_final_nodes_created_by_function():
+def test_create_nfa_by_graph_with_start_final_nodes_created_by_function():
     graph = cfpq_data.labeled_two_cycles_graph(3, 4, labels=("a", "b"))
 
-    nfa = work_with_graph.get_nfa_by_graph(graph, [6], [1])
+    nfa = work_with_graph.create_nfa_by_graph(graph, [6], [1])
 
     assert not nfa.accepts(["b", "a"])
     assert nfa.accepts(["b", "b", "a"])
