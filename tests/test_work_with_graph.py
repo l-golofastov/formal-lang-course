@@ -3,6 +3,8 @@ import cfpq_data
 import pydot
 import os
 import networkx
+import pyformlang
+import scipy
 from project import work_with_graph
 
 
@@ -106,3 +108,71 @@ def test_create_nfa_by_graph_with_start_final_nodes_created_by_function():
     assert not nfa.accepts(["b", "a"])
     assert nfa.accepts(["b", "b", "a"])
     assert not nfa.accepts(["a", "b"])
+
+
+def test_functionality():
+
+    nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
+
+    nfa.add_transitions(
+        [(0, "abc", 1), (0, "abc", 0), (1, "d", 1), (1, "c", 1), (1, "abc", 1)]
+    )
+
+    nfa.add_start_state(0)
+
+    nfa.add_final_state(1)
+
+    nfa_dict = nfa.to_dict()
+
+    dfa = work_with_graph.create_dfa_by_regex("abc|d")
+
+    print(dfa.to_dict())
+
+    print(dfa.start_states)
+    print(dfa.final_states)
+
+    intersect = work_with_graph.intersect_two_fa(dfa, nfa)
+
+    print(nfa_dict)
+
+    labels_with_nodes = nfa_dict.values()
+
+    # print(list(labels_with_nodes))
+
+    labels = []
+    for dict in labels_with_nodes:
+        for label in dict.keys():
+            labels.append(label)
+
+    # print(list(set(labels)))
+
+    # print(nfa_dict[0]['abc'])
+
+    nfa_new = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
+
+    nfa_new.add_transitions([(0, "a", 1), (0, "a", 0), (1, "b", 2), (1, "b", 1)])
+
+    nfa_new.add_start_state(0)
+
+    nfa_new.add_final_state(1)
+
+    matrices = work_with_graph.create_binary_sparse_matrices(dfa)
+    for matrix in matrices.values():
+        print(matrix.toarray())
+
+    for matrix in intersect.values():
+        print(matrix.toarray())
+
+    nfa_new_binary = work_with_graph.create_binary_sparse_matrices(nfa_new)
+    nfa_new_closure = work_with_graph.get_transitive_closure(nfa_new_binary)
+
+    for pair in nfa_new_closure:
+        print(pair)
+
+    start_final_states_intersected = work_with_graph.get_start_final_states_intersected(
+        dfa, nfa
+    )
+
+    print(start_final_states_intersected["final"])
+
+    assert True
