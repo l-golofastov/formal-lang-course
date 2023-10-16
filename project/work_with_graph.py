@@ -145,7 +145,22 @@ def get_states_intersected(fa1, fa2):
 
 
 def make_regular_path_query(regex, graph, start_nodes=None, final_nodes=None):
+    result = set()
     dfa = create_dfa_by_regex(regex)
     nfa = create_nfa_by_graph(graph, start_nodes, final_nodes)
 
-    intersected_fa_binary_matrices = intersect_two_fa(dfa, nfa)
+    intersected_fa = intersect_two_fa(dfa, nfa)
+    start_final_states = get_start_final_states_intersected(dfa, nfa)
+    transitive_closure = get_transitive_closure(intersected_fa)
+
+    for pair in transitive_closure:
+        start = pair[0]
+        final = pair[1]
+        if start in start_final_states['start'] and final in start_final_states['final']:
+            '''
+            result_start = pair[0] // len(nfa.states)
+            result_final = pair[1] // len(nfa.states)
+            result.add((result_start, result_final))
+            '''
+            result.add(pair)
+    return result

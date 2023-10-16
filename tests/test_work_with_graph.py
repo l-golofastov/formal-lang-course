@@ -125,6 +125,7 @@ def test_functionality():
     nfa_dict = nfa.to_dict()
 
     dfa = work_with_graph.create_dfa_by_regex("abc|d")
+    assert dfa.accepts(["abc"])
 
     print(dfa.to_dict())
 
@@ -165,14 +166,57 @@ def test_functionality():
 
     nfa_new_binary = work_with_graph.create_binary_sparse_matrices(nfa_new)
     nfa_new_closure = work_with_graph.get_transitive_closure(nfa_new_binary)
+    intersect_closure = work_with_graph.get_transitive_closure(intersect)
+    start_final_states = work_with_graph.get_start_final_states_intersected(dfa, nfa)
+    for state in start_final_states['start']:
+        print(state)
+    for state in start_final_states['final']:
+        print(state)
 
-    for pair in nfa_new_closure:
+    result = set()
+    for pair in intersect_closure:
+        start = pair[0]
+        final = pair[1]
+        if start in start_final_states['start'] and final in start_final_states['final']:
+            result_start = pair[0] // len(nfa.states)
+            result_final = pair[1] // len(nfa.states)
+            result.add((result_start, result_final))
+    print(result)
+    print()
+
+
+
+    for pair in intersect_closure:
         print(pair)
 
     start_final_states_intersected = work_with_graph.get_start_final_states_intersected(
         dfa, nfa
     )
 
-    print(start_final_states_intersected["final"])
+    print(start_final_states_intersected['start'])
+    print(start_final_states_intersected['final'])
 
     assert True
+
+def test_regular_path_query_1():
+    graph_ex = cfpq_data.labeled_two_cycles_graph(2, 2, labels=("a", "b"))
+    print(graph_ex.edges(data=True))
+    result = work_with_graph.make_regular_path_query("(a + b)* b (a + b)*", graph_ex, [0, 1], [2, 3])
+    print(result)
+    dfa = work_with_graph.create_dfa_by_regex("(a + b)* b (a + b)*")
+    nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
+
+    nfa.add_transitions([(0, "a", 1), (1, "a", 2), (2, "a", 0), (0, "b", 3), (3, "b", 4), (4, "b", 0)])
+
+    nfa.add_start_state(0)
+    nfa.add_start_state(1)
+    nfa.add_final_state(2)
+    nfa.add_final_state(3)
+
+    intersect = work_with_graph.intersect_two_fa(dfa, nfa)
+    transitive = work_with_graph.get_transitive_closure(intersect)
+    for pair in transitive:
+        print(pair)
+
+    assert dfa.accepts("aba")
+    #assert result == {(1, 2), (0, 2), (0, 3), (1, 3)}
