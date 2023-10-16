@@ -2,9 +2,8 @@ import pytest
 import cfpq_data
 import pydot
 import os
-import networkx
-import pyformlang
-import scipy
+import networkx as nx
+from pyformlang.finite_automaton import State, Symbol, NondeterministicFiniteAutomaton
 from project import work_with_graph
 
 
@@ -44,9 +43,7 @@ def test_save_two_cycles_graph_save_correction():
     )
     saved_graph = pydot.graph_from_dot_file("save_two_cycles_graph_output.dot")
 
-    pydot_graph_raw = (
-        networkx.drawing.nx_pydot.to_pydot(graph).to_string().splitlines()[1:-1]
-    )
+    pydot_graph_raw = nx.drawing.nx_pydot.to_pydot(graph).to_string().splitlines()[1:-1]
     saved_graph_raw = saved_graph[0].to_string().splitlines()[1:-2]
 
     for i in range(len(pydot_graph_raw)):
@@ -110,113 +107,37 @@ def test_create_nfa_by_graph_with_start_final_nodes_created_by_function():
     assert not nfa.accepts(["a", "b"])
 
 
-def test_functionality():
+def test_make_regular_path_query_with_empty_graph():
+    graph = nx.MultiDiGraph()
+    result = work_with_graph.make_regular_path_query("", graph)
 
-    nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
+    assert result == set()
 
-    nfa.add_transitions(
-        [(0, "abc", 1), (0, "abc", 0), (1, "d", 1), (1, "c", 1), (1, "abc", 1)]
+
+def test_make_regular_path_query_with_simple_graph_and_nonempty_intersection():
+    automaton = NondeterministicFiniteAutomaton()
+    automaton.add_transition(State(0), Symbol("a"), State(1))
+    automaton.add_transition(State(1), Symbol("a"), State(0))
+    graph = automaton.to_networkx()
+    result = work_with_graph.make_regular_path_query("a|b", graph)
+
+    assert result == {(0, 1), (1, 0)}
+
+
+def test_make_regular_path_query_with_simple_graph_and_empty_intersection():
+    automaton = NondeterministicFiniteAutomaton()
+    automaton.add_transition(State(0), Symbol("a"), State(1))
+    automaton.add_transition(State(1), Symbol("a"), State(0))
+    graph = automaton.to_networkx()
+    result = work_with_graph.make_regular_path_query("b*", graph)
+
+    assert result == set()
+
+
+def test_make_regular_path_query_labeled_two_cycles_graph():
+    graph = cfpq_data.labeled_two_cycles_graph(2, 2, labels=("a", "b"))
+    result = work_with_graph.make_regular_path_query(
+        "(a + b)* b (a + b)*", graph, [0, 1], [2, 3]
     )
 
-    nfa.add_start_state(0)
-
-    nfa.add_final_state(1)
-
-    nfa_dict = nfa.to_dict()
-
-    dfa = work_with_graph.create_dfa_by_regex("abc|d")
-    assert dfa.accepts(["abc"])
-
-    print(dfa.to_dict())
-
-    print(dfa.start_states)
-    print(dfa.final_states)
-
-    intersect = work_with_graph.intersect_two_fa(dfa, nfa)
-
-    print(nfa_dict)
-
-    labels_with_nodes = nfa_dict.values()
-
-    # print(list(labels_with_nodes))
-
-    labels = []
-    for dict in labels_with_nodes:
-        for label in dict.keys():
-            labels.append(label)
-
-    # print(list(set(labels)))
-
-    # print(nfa_dict[0]['abc'])
-
-    nfa_new = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
-
-    nfa_new.add_transitions([(0, "a", 1), (0, "a", 0), (1, "b", 2), (1, "b", 1)])
-
-    nfa_new.add_start_state(0)
-
-    nfa_new.add_final_state(1)
-
-    matrices = work_with_graph.create_binary_sparse_matrices(dfa)
-    for matrix in matrices.values():
-        print(matrix.toarray())
-
-    for matrix in intersect.values():
-        print(matrix.toarray())
-
-    nfa_new_binary = work_with_graph.create_binary_sparse_matrices(nfa_new)
-    nfa_new_closure = work_with_graph.get_transitive_closure(nfa_new_binary)
-    intersect_closure = work_with_graph.get_transitive_closure(intersect)
-    start_final_states = work_with_graph.get_start_final_states_intersected(dfa, nfa)
-    for state in start_final_states['start']:
-        print(state)
-    for state in start_final_states['final']:
-        print(state)
-
-    result = set()
-    for pair in intersect_closure:
-        start = pair[0]
-        final = pair[1]
-        if start in start_final_states['start'] and final in start_final_states['final']:
-            result_start = pair[0] // len(nfa.states)
-            result_final = pair[1] // len(nfa.states)
-            result.add((result_start, result_final))
-    print(result)
-    print()
-
-
-
-    for pair in intersect_closure:
-        print(pair)
-
-    start_final_states_intersected = work_with_graph.get_start_final_states_intersected(
-        dfa, nfa
-    )
-
-    print(start_final_states_intersected['start'])
-    print(start_final_states_intersected['final'])
-
-    assert True
-
-def test_regular_path_query_1():
-    graph_ex = cfpq_data.labeled_two_cycles_graph(2, 2, labels=("a", "b"))
-    print(graph_ex.edges(data=True))
-    result = work_with_graph.make_regular_path_query("(a + b)* b (a + b)*", graph_ex, [0, 1], [2, 3])
-    print(result)
-    dfa = work_with_graph.create_dfa_by_regex("(a + b)* b (a + b)*")
-    nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
-
-    nfa.add_transitions([(0, "a", 1), (1, "a", 2), (2, "a", 0), (0, "b", 3), (3, "b", 4), (4, "b", 0)])
-
-    nfa.add_start_state(0)
-    nfa.add_start_state(1)
-    nfa.add_final_state(2)
-    nfa.add_final_state(3)
-
-    intersect = work_with_graph.intersect_two_fa(dfa, nfa)
-    transitive = work_with_graph.get_transitive_closure(intersect)
-    for pair in transitive:
-        print(pair)
-
-    assert dfa.accepts("aba")
-    #assert result == {(1, 2), (0, 2), (0, 3), (1, 3)}
+    assert result == {(1, 2), (0, 2), (0, 3), (1, 3)}

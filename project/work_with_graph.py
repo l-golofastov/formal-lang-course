@@ -97,6 +97,9 @@ def create_binary_sparse_matrices(fa):
 
 
 def get_transitive_closure(binary_matrices):
+    if len(binary_matrices) == 0:
+        return scipy.sparse.dok_matrix((0, 0), dtype=int)
+
     transitive_closure = sum(binary_matrices.values())
     prev = transitive_closure.count_nonzero()
     curr = 0
@@ -110,7 +113,6 @@ def get_transitive_closure(binary_matrices):
 
 
 def get_start_final_states_intersected(fa1, fa2):
-    states = get_states_intersected(fa1, fa2)
     start_final_states_intersected = {}
     start_states_intersected = []
     final_states_intersected = []
@@ -118,12 +120,12 @@ def get_start_final_states_intersected(fa1, fa2):
     for start_state_fa1 in fa1.start_states:
         for start_state_fa2 in fa2.start_states:
             pair = start_state_fa1, start_state_fa2
-            start_states_intersected.append(states[pair])
+            start_states_intersected.append(pair)
 
     for final_state_fa1 in fa1.final_states:
         for final_state_fa2 in fa2.final_states:
             pair = final_state_fa1, final_state_fa2
-            final_states_intersected.append(states[pair])
+            final_states_intersected.append(pair)
 
     start_final_states_intersected["start"] = start_states_intersected
     start_final_states_intersected["final"] = final_states_intersected
@@ -133,12 +135,12 @@ def get_start_final_states_intersected(fa1, fa2):
 
 def get_states_intersected(fa1, fa2):
     states = {}
-
     index = 0
+
     for state_fa1 in fa1.states:
         for state_fa2 in fa2.states:
             pair = state_fa1, state_fa2
-            states[pair] = index
+            states[index] = pair
             index += 1
 
     return states
@@ -150,17 +152,18 @@ def make_regular_path_query(regex, graph, start_nodes=None, final_nodes=None):
     nfa = create_nfa_by_graph(graph, start_nodes, final_nodes)
 
     intersected_fa = intersect_two_fa(dfa, nfa)
+    states = get_states_intersected(dfa, nfa)
     start_final_states = get_start_final_states_intersected(dfa, nfa)
     transitive_closure = get_transitive_closure(intersected_fa)
 
     for pair in transitive_closure:
-        start = pair[0]
-        final = pair[1]
-        if start in start_final_states['start'] and final in start_final_states['final']:
-            '''
-            result_start = pair[0] // len(nfa.states)
-            result_final = pair[1] // len(nfa.states)
-            result.add((result_start, result_final))
-            '''
-            result.add(pair)
+        start = states[pair[0]]
+        final = states[pair[1]]
+        if (
+            start in start_final_states["start"]
+            and final in start_final_states["final"]
+        ):
+            result_pair = start[1], final[1]
+            result.add(result_pair)
+
     return result
