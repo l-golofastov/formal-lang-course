@@ -1,56 +1,7 @@
 import cfpq_data
 import networkx
-import pydot
 import pyformlang
 import scipy
-
-
-def get_nodes_edges_labels(name):
-    nodes = name.number_of_nodes()
-    edges = name.number_of_edges()
-    labels = set(cfpq_data.get_sorted_labels(name))
-
-    return nodes, edges, labels
-
-
-def save_two_cycles_graph(nodes_graph1, nodes_graph2, labels, file_path):
-    graph = cfpq_data.labeled_two_cycles_graph(
-        nodes_graph1, nodes_graph2, labels=labels
-    )
-
-    pydot_graph = networkx.drawing.nx_pydot.to_pydot(graph)
-
-    return pydot_graph.write(path=file_path)
-
-
-def create_dfa_by_regex(expression):
-    regex = pyformlang.regular_expression.Regex(expression)
-    enfa = regex.to_epsilon_nfa()
-    dfa = enfa.to_deterministic()
-    minimal_dfa = dfa.minimize()
-
-    return minimal_dfa
-
-
-def create_nfa_by_graph(graph, start_nodes=None, final_nodes=None):
-    nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
-
-    start_states = start_nodes if start_nodes is not None else list(graph.nodes)
-    final_states = final_nodes if final_nodes is not None else list(graph.nodes)
-
-    for state in start_states:
-        nfa.add_start_state(state)
-
-    for state in final_states:
-        nfa.add_final_state(state)
-
-    for node1, node2, label in list(graph.edges(data=True)):
-        state1 = pyformlang.finite_automaton.State(node1)
-        state2 = pyformlang.finite_automaton.State(node2)
-        transition_symbol = pyformlang.finite_automaton.Symbol(label["label"])
-        nfa.add_transition(state1, transition_symbol, state2)
-
-    return nfa
 
 
 def intersect_two_fa(fa1, fa2):
@@ -144,26 +95,3 @@ def get_states_intersected(fa1, fa2):
             index += 1
 
     return states
-
-
-def make_regular_path_query(regex, graph, start_nodes=None, final_nodes=None):
-    result = set()
-    dfa = create_dfa_by_regex(regex)
-    nfa = create_nfa_by_graph(graph, start_nodes, final_nodes)
-
-    intersected_fa = intersect_two_fa(dfa, nfa)
-    states = get_states_intersected(dfa, nfa)
-    start_final_states = get_start_final_states_intersected(dfa, nfa)
-    transitive_closure = get_transitive_closure(intersected_fa)
-
-    for pair in transitive_closure:
-        start = states[pair[0]]
-        final = states[pair[1]]
-        if (
-            start in start_final_states["start"]
-            and final in start_final_states["final"]
-        ):
-            result_pair = start[1], final[1]
-            result.add(result_pair)
-
-    return result
