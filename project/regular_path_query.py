@@ -1,7 +1,3 @@
-import cfpq_data
-import networkx
-import pyformlang
-import scipy
 from project.graph_utils import *
 from project.automata_utils import *
 

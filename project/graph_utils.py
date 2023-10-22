@@ -1,8 +1,6 @@
 import cfpq_data
 import networkx
-import pydot
 import pyformlang
-import scipy
 
 
 def get_nodes_edges_labels(name):

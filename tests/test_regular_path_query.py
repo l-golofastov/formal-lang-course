@@ -1,7 +1,5 @@
 import pytest
 import cfpq_data
-import pydot
-import os
 import networkx as nx
 from pyformlang.finite_automaton import State, Symbol, NondeterministicFiniteAutomaton
 from project import regular_path_query

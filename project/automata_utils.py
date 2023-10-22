@@ -1,6 +1,3 @@
-import cfpq_data
-import networkx
-import pyformlang
 import scipy
 
 
