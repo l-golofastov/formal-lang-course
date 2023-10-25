@@ -1,6 +1,5 @@
 import cfpq_data
 import networkx
-import pydot
 import pyformlang
 
 
