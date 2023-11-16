@@ -92,3 +92,68 @@ def get_states_intersected(fa1, fa2):
             index += 1
 
     return states
+
+
+def create_direct_sum_binary_matrices(fa1, fa2):
+    direct_sum_binary_matrices = {}
+
+    fa1_decomposed = create_binary_sparse_matrices(fa1)
+    fa2_decomposed = create_binary_sparse_matrices(fa2)
+
+    labels = set()
+    for _, label, _ in fa1:
+        labels.add(label)
+    for _, label, _ in fa2:
+        labels.add(label)
+    labels_list = list(labels)
+
+    for label_dfa in fa1_decomposed:
+        for label_nfa in fa2_decomposed:
+            if label_dfa == label_nfa:
+                fa1_label_matrix = fa1_decomposed[label_dfa]
+                fa2_label_matrix = fa2_decomposed[label_nfa]
+
+                matrix = scipy.sparse.dok_matrix(
+                    (
+                        len(fa1.states) + len(fa2.states),
+                        len(fa1.states) + len(fa2.states),
+                    ),
+                    dtype=int,
+                )
+
+                for i in range(len(fa1.states)):
+                    for j in range(len(fa1.states)):
+                        matrix[i, j] = fa1_label_matrix.toarray()[i][j]
+
+                for i in range((len(fa2.states))):
+                    for j in range(len(fa2.states)):
+                        matrix[
+                            i + len(fa1.states), j + len(fa1.states)
+                        ] = fa2_label_matrix.toarray()[i][j]
+
+                direct_sum_binary_matrices[label_dfa] = matrix
+
+                labels_list.remove(label_dfa)
+
+    if len(labels_list) != 0:
+        for label in labels_list:
+            matrix = scipy.sparse.dok_matrix(
+                (len(fa1.states) + len(fa2.states), len(fa1.states) + len(fa2.states)),
+                dtype=int,
+            )
+            if label in fa1_decomposed:
+                fa1_label_matrix = fa1_decomposed[label]
+                for i in range(len(fa1.states)):
+                    for j in range(len(fa1.states)):
+                        matrix[i, j] = fa1_label_matrix.toarray()[i][j]
+            else:
+                fa2_label_matrix = fa2_decomposed[label]
+                for i in range((len(fa2.states))):
+                    for j in range(len(fa2.states)):
+                        matrix[
+                            i + len(fa1.states), j + len(fa1.states)
+                        ] = fa2_label_matrix.toarray()[i][j]
+
+            direct_sum_binary_matrices[label] = matrix
+
+    return direct_sum_binary_matrices
