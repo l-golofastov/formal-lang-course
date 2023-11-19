@@ -1,4 +1,3 @@
-import numpy as np
 from project.graph_utils import *
 from project.automata_utils import *
 
@@ -27,10 +26,8 @@ def rpq_tensor(regex, graph, start_nodes=None, final_nodes=None):
 
 
 def rpq_bfs(regex, graph, start_nodes=None, final_nodes=None, option=False):
-    # result = {} if option else set()
     dfa = create_dfa_by_regex(regex)
     nfa = create_nfa_by_graph(graph, start_nodes, final_nodes)
-    print(dfa.to_dict())
 
     common_labels = set()
     for _, label_dfa, _ in dfa:
@@ -60,8 +57,7 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
 
     for start_state_dfa in dfa.start_states:
         for start_state_nfa in nfa.start_states:
-            if option:
-                reachable_states = set()
+            reachable_states = set()
             start_state_dfa_num = dfa_states_indexes[start_state_dfa]
             start_state_nfa_num = nfa_states_indexes[start_state_nfa]
 
@@ -80,7 +76,6 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
             curr = mask.count_nonzero()
 
             while prev != curr:
-                print(front.toarray())
                 for j in range(len(dfa.states) + len(nfa.states)):
                     front_element_reversed = 1 if front[0, j] == 0 else 0
                     mask[0, j] = 1 if (mask[0, j] * front_element_reversed > 0) else 0
@@ -126,8 +121,8 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
                     (1, len(dfa.states) + len(nfa.states)), dtype=int
                 )
                 for label in transition_labels_dfa:
-                    print(label)
                     multiplication_sum += multiplication_result[label]
+
                 front = (
                     front_empty
                     if type(multiplication_sum) == int
@@ -145,7 +140,6 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
                             ):
                                 if option:
                                     reachable_states.add(nfa_state - len(dfa.states))
-                                    print(reachable_states)
                                 else:
                                     result.add(nfa_state - len(dfa.states))
 
@@ -156,7 +150,3 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
                 result[start_state_nfa_num - len(dfa.states)] = reachable_states
 
     return result
-
-
-def bfs_two_graph_step():
-    return
