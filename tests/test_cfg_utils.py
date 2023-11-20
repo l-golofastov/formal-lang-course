@@ -14,7 +14,7 @@ def test_get_weak_chomsky_normal_form_decompose_productions():
     )
 
     cfg_wcnf = get_weak_chomsky_normal_form(cfg)
-    expected_cfg = read_cfg_from_file("test_files/wcnf_1.txt")
+    expected_cfg = read_cfg_from_file("tests/test_files/wcnf_1.txt")
 
     assert cfg_wcnf.start_symbol == expected_cfg.start_symbol
     assert cfg_wcnf.terminals == expected_cfg.terminals
@@ -34,7 +34,7 @@ def test_get_weak_chomsky_normal_form_remove_useless_symbols():
     )
 
     cfg_wcnf = get_weak_chomsky_normal_form(cfg)
-    expected_cfg = read_cfg_from_file("test_files/wcnf_1.txt")
+    expected_cfg = read_cfg_from_file("tests/test_files/wcnf_1.txt")
 
     assert cfg_wcnf.start_symbol == expected_cfg.start_symbol
     assert cfg_wcnf.terminals == expected_cfg.terminals
@@ -56,7 +56,7 @@ def test_get_weak_chomsky_normal_form_eliminate_unit_productions():
     )
 
     cfg_wcnf = get_weak_chomsky_normal_form(cfg)
-    expected_cfg = read_cfg_from_file("test_files/wcnf_2.txt")
+    expected_cfg = read_cfg_from_file("tests/test_files/wcnf_2.txt")
 
     assert cfg_wcnf.start_symbol == expected_cfg.start_symbol
     assert cfg_wcnf.terminals == expected_cfg.terminals
@@ -75,7 +75,7 @@ def test_get_weak_chomsky_normal_form_delete_multiple_terminals():
     )
 
     cfg_wcnf = get_weak_chomsky_normal_form(cfg)
-    expected_cfg = read_cfg_from_file("test_files/wcnf_3.txt")
+    expected_cfg = read_cfg_from_file("tests/test_files/wcnf_3.txt")
 
     assert cfg_wcnf.start_symbol == expected_cfg.start_symbol
     assert cfg_wcnf.terminals == expected_cfg.terminals
@@ -84,6 +84,6 @@ def test_get_weak_chomsky_normal_form_delete_multiple_terminals():
 
 
 def test_get_weak_chomsky_normal_form_empty():
-    cfg = read_cfg_from_file("test_files/wcnf_4.txt")
+    cfg = read_cfg_from_file("tests/test_files/wcnf_4.txt")
 
     assert cfg.is_empty()
