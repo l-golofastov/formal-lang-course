@@ -1,9 +1,9 @@
 import pytest
 
-from project.cfg_utils import *
+from project.cfg import *
 
 
-def test_get_weak_chomsky_normal_form_decompose_productions():
+def test_cfg_to_wcnf_decompose_productions():
     cfg = CFG.from_text(
         """
 		S -> A B C
@@ -13,7 +13,7 @@ def test_get_weak_chomsky_normal_form_decompose_productions():
 	"""
     )
 
-    cfg_wcnf = get_weak_chomsky_normal_form(cfg)
+    cfg_wcnf = cfg_to_wcnf(cfg)
     try:
         expected_cfg = read_cfg_from_file("tests/test_files/wcnf_1.txt")
     except OSError:
@@ -25,7 +25,7 @@ def test_get_weak_chomsky_normal_form_decompose_productions():
     assert cfg_wcnf.productions == expected_cfg.productions
 
 
-def test_get_weak_chomsky_normal_form_remove_useless_symbols():
+def test_cfg_to_wcnf_remove_useless_symbols():
     cfg = CFG.from_text(
         """
 		S -> A B C
@@ -36,7 +36,7 @@ def test_get_weak_chomsky_normal_form_remove_useless_symbols():
 	"""
     )
 
-    cfg_wcnf = get_weak_chomsky_normal_form(cfg)
+    cfg_wcnf = cfg_to_wcnf(cfg)
     try:
         expected_cfg = read_cfg_from_file("tests/test_files/wcnf_1.txt")
     except OSError:
@@ -48,7 +48,7 @@ def test_get_weak_chomsky_normal_form_remove_useless_symbols():
     assert cfg_wcnf.productions == expected_cfg.productions
 
 
-def test_get_weak_chomsky_normal_form_eliminate_unit_productions():
+def test_cfg_to_wcnf_eliminate_unit_productions():
     cfg = CFG.from_text(
         """
 		S -> A B C X
@@ -61,7 +61,7 @@ def test_get_weak_chomsky_normal_form_eliminate_unit_productions():
 	"""
     )
 
-    cfg_wcnf = get_weak_chomsky_normal_form(cfg)
+    cfg_wcnf = cfg_to_wcnf(cfg)
     try:
         expected_cfg = read_cfg_from_file("tests/test_files/wcnf_2.txt")
     except OSError:
@@ -73,7 +73,7 @@ def test_get_weak_chomsky_normal_form_eliminate_unit_productions():
     assert cfg_wcnf.productions == expected_cfg.productions
 
 
-def test_get_weak_chomsky_normal_form_delete_multiple_terminals():
+def test_cfg_to_wcnf_delete_multiple_terminals():
     cfg = CFG.from_text(
         """
 		S -> A B
@@ -83,7 +83,7 @@ def test_get_weak_chomsky_normal_form_delete_multiple_terminals():
 	"""
     )
 
-    cfg_wcnf = get_weak_chomsky_normal_form(cfg)
+    cfg_wcnf = cfg_to_wcnf(cfg)
     try:
         expected_cfg = read_cfg_from_file("tests/test_files/wcnf_3.txt")
     except OSError:
@@ -95,7 +95,7 @@ def test_get_weak_chomsky_normal_form_delete_multiple_terminals():
     assert cfg_wcnf.productions == expected_cfg.productions
 
 
-def test_get_weak_chomsky_normal_form_empty():
+def test_cfg_to_wcnf_empty():
     try:
         cfg = read_cfg_from_file("tests/test_files/wcnf_4.txt")
     except OSError:
