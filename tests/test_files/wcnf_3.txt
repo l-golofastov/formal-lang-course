@@ -1,0 +1,7 @@
+S -> A B
+A -> "VAR:a#CNF#" C#CNF#1
+a#CNF# -> a
+C#CNF#1 -> "VAR:aa#CNF#" "VAR:aalanguage#CNF#"
+aa#CNF# -> aa
+aalanguage#CNF# -> aalanguage
+B -> b

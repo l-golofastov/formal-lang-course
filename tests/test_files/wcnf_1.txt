@@ -1,0 +1,5 @@
+S -> A C#CNF#1
+A -> a
+B -> b
+C -> c
+C#CNF#1 -> B C
