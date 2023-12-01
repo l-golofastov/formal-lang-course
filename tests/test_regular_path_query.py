@@ -1,8 +1,7 @@
-import pytest
 import cfpq_data
 import networkx as nx
 from pyformlang.finite_automaton import State, Symbol, NondeterministicFiniteAutomaton
-from project import regular_path_query
+from project.regular import regular_path_query
 
 
 def test_rpq_tensor_with_empty_graph():
