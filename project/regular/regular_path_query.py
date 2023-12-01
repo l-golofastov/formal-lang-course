@@ -1,5 +1,5 @@
-from project.graph_utils import *
-from project.automata_utils import *
+from project.regular.graph_utils import *
+from project.regular.automata_utils import *
 
 
 def rpq_tensor(regex, graph, start_nodes=None, final_nodes=None):

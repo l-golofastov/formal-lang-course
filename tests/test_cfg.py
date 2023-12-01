@@ -1,6 +1,4 @@
-import pytest
-
-from project.cfg import *
+from project.context_free.cfg import *
 
 
 def test_cfg_to_wcnf_decompose_productions():

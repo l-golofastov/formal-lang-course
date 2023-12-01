@@ -1,6 +1,7 @@
 import cfpq_data
 import networkx
-import pyformlang
+from pyformlang.regular_expression import Regex
+from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State, Symbol
 
 
 def get_nodes_edges_labels(name):
@@ -22,7 +23,7 @@ def save_two_cycles_graph(nodes_graph1, nodes_graph2, labels, file_path):
 
 
 def create_dfa_by_regex(expression):
-    regex = pyformlang.regular_expression.Regex(expression)
+    regex = expression if isinstance(expression, Regex) else Regex(expression)
     enfa = regex.to_epsilon_nfa()
     dfa = enfa.to_deterministic()
     minimal_dfa = dfa.minimize()
@@ -31,7 +32,7 @@ def create_dfa_by_regex(expression):
 
 
 def create_nfa_by_graph(graph, start_nodes=None, final_nodes=None):
-    nfa = pyformlang.finite_automaton.NondeterministicFiniteAutomaton()
+    nfa = NondeterministicFiniteAutomaton()
 
     start_states = start_nodes if start_nodes is not None else list(graph.nodes)
     final_states = final_nodes if final_nodes is not None else list(graph.nodes)
@@ -43,9 +44,9 @@ def create_nfa_by_graph(graph, start_nodes=None, final_nodes=None):
         nfa.add_final_state(state)
 
     for node1, node2, label in list(graph.edges(data=True)):
-        state1 = pyformlang.finite_automaton.State(node1)
-        state2 = pyformlang.finite_automaton.State(node2)
-        transition_symbol = pyformlang.finite_automaton.Symbol(label["label"])
+        state1 = State(node1)
+        state2 = State(node2)
+        transition_symbol = Symbol(label["label"])
         nfa.add_transition(state1, transition_symbol, state2)
 
     return nfa

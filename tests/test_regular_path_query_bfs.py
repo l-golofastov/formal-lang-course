@@ -1,6 +1,4 @@
-import pytest
-
-from project.regular_path_query import *
+from project.regular.regular_path_query import *
 from pyformlang.finite_automaton.nondeterministic_finite_automaton import *
 from networkx import MultiDiGraph
 from cfpq_data import *
