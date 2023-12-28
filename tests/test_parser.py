@@ -117,6 +117,16 @@ def test_accepts_comment():
     assert accepts(inp_comment_false) == False
 
 
+def test_accepts_prog():
+    inp = """
+    a = union ("A", "a");
+    b_a = (union ("b", a))*;
+    print concat (a, b_a);
+    """
+
+    assert accepts(inp) == True
+
+
 def test_save_as_dot():
     text = """a = 5;"""
     try:
