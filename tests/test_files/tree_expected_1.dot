@@ -1,0 +1,25 @@
+digraph tree {
+1 [label=prog];
+1 -> 2;
+2 [label=stmt];
+2 -> 3;
+3 [label=var];
+3 -> 4;
+4 [label=initial_letter];
+4 -> 5;
+5 [label=a];
+3 -> 6;
+6 [label=string];
+2 -> 7;
+7 [label="="];
+2 -> 8;
+8 [label=expr];
+8 -> 9;
+9 [label=val];
+9 -> 10;
+10 [label=5];
+1 -> 11;
+11 [label=";"];
+1 -> 12;
+12 [label=<EOF>];
+}
