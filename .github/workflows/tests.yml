@@ -46,6 +46,11 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip list
 
+      #Generate parser
+      - name: Generate parser
+        working-directory: project/gql
+        run: antlr4 -Dlanguage=Python3 GQL.g4
+
       # Install pre-commit from .pre-commit-config.yaml
       - name: Install pre-commit
         run: |
