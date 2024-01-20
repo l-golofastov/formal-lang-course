@@ -42,12 +42,12 @@ def test_save_two_cycles_graph_save_correction():
     saved_graph = pydot.graph_from_dot_file("save_two_cycles_graph_output.dot")
 
     pydot_graph_raw = nx.drawing.nx_pydot.to_pydot(graph).to_string().splitlines()[1:-1]
-    saved_graph_raw = saved_graph[0].to_string().splitlines()[1:-2]
+    saved_graph_raw = saved_graph[0].to_string().splitlines()[1:-1]
 
     for i in range(len(pydot_graph_raw)):
         pydot_graph_line = pydot_graph_raw[i]
         saved_graph_line = saved_graph_raw[i]
-        print(i, len(pydot_graph_raw))
+        print(i, len(pydot_graph_raw), len(saved_graph_raw))
         assert pydot_graph_line == saved_graph_line
 
     os.remove("save_two_cycles_graph_output.dot")
