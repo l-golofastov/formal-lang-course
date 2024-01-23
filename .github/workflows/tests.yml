@@ -49,7 +49,7 @@ jobs:
       #Generate parser
       - name: Generate parser
         working-directory: project/gql
-        run: antlr4 -Dlanguage=Python3 GQL.g4
+        run: antlr4 -Dlanguage=Python3 GQL.g4 -visitor
 
       # Install pre-commit from .pre-commit-config.yaml
       - name: Install pre-commit

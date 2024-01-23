@@ -4,6 +4,12 @@ from pyformlang.regular_expression import Regex
 from pyformlang.finite_automaton import NondeterministicFiniteAutomaton, State, Symbol
 
 
+def get_graph(name):
+    path = cfpq_data.download(name)
+
+    return cfpq_data.graph_from_csv(path)
+
+
 def get_nodes_edges_labels(name):
     nodes = name.number_of_nodes()
     edges = name.number_of_edges()

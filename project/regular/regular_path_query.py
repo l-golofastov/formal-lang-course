@@ -1,3 +1,5 @@
+import pyformlang.finite_automaton
+
 from project.regular.graph_utils import *
 from project.regular.automata_utils import *
 
@@ -148,5 +150,19 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
 
             if option:
                 result[start_state_nfa_num - len(dfa.states)] = reachable_states
+
+    return result
+
+
+def rpq_for_interpreter(graph):
+    graph_bool_decomposition = create_binary_sparse_matrices(graph)
+    transitive_closure = get_transitive_closure(graph_bool_decomposition)
+    result = set()
+
+    for pair in transitive_closure:
+        start = pair[0]
+        final = pair[1]
+        if start in graph.start_states and final in graph.final_states:
+            result.add(pyformlang.finite_automaton.State(final))
 
     return result
