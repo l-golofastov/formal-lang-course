@@ -6,9 +6,8 @@ stmt:   var '=' expr
     |   'print' expr
     ;
 
-var:    initial_letter string ;
-initial_letter: ID_CHAR ;
-string: (initial_letter | '/' | '.' | INT)* ;
+var:    ID_CHAR string ;
+string: (ID_CHAR | '/' | '.' | INT)* ;
 
 
 expr:	L_PARENTHESIS expr R_PARENTHESIS
