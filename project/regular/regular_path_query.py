@@ -2,6 +2,8 @@ import pyformlang.finite_automaton
 
 from project.regular.graph_utils import *
 from project.regular.automata_utils import *
+from scipy.sparse.dok import dok_matrix
+from scipy.sparse.lil import lil_matrix
 
 
 def rpq_tensor(regex, graph, start_nodes=None, final_nodes=None):
@@ -27,7 +29,14 @@ def rpq_tensor(regex, graph, start_nodes=None, final_nodes=None):
     return result
 
 
-def rpq_bfs(regex, graph, start_nodes=None, final_nodes=None, option=False):
+def rpq_bfs(
+    regex,
+    graph,
+    start_nodes=None,
+    final_nodes=None,
+    option=False,
+    mtx_type_matrix=lil_matrix,
+):
     dfa = create_dfa_by_regex(regex)
     nfa = create_nfa_by_graph(graph, start_nodes, final_nodes)
 
@@ -37,12 +46,12 @@ def rpq_bfs(regex, graph, start_nodes=None, final_nodes=None, option=False):
             if label_dfa == label_nfa:
                 common_labels.add(label_dfa)
 
-    result = bfs_two_graph(dfa, nfa, common_labels, option)
+    result = bfs_two_graph(dfa, nfa, common_labels, option, mtx_type_matrix)
 
     return result
 
 
-def bfs_two_graph(dfa, nfa, common_labels, option=False):
+def bfs_two_graph(dfa, nfa, common_labels, option=False, mtx_type_matrix=lil_matrix):
     result = {} if option else set()
     if len(dfa.states) == 0 or len(nfa.states) == 0:
         return result
@@ -63,15 +72,11 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
             start_state_dfa_num = dfa_states_indexes[start_state_dfa]
             start_state_nfa_num = nfa_states_indexes[start_state_nfa]
 
-            mask = scipy.sparse.dok_matrix(
-                (1, len(dfa.states) + len(nfa.states)), dtype=int
-            )
+            mask = mtx_type_matrix((1, len(dfa.states) + len(nfa.states)), dtype=int)
             for j in range(len(dfa.states) + len(nfa.states)):
                 mask[0, j] = 1
 
-            front = scipy.sparse.dok_matrix(
-                (1, len(dfa.states) + len(nfa.states)), dtype=int
-            )
+            front = mtx_type_matrix((1, len(dfa.states) + len(nfa.states)), dtype=int)
             front[0, start_state_dfa_num], front[0, start_state_nfa_num] = 1, 1
 
             prev = 0
@@ -92,7 +97,7 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
                     multiplication_result[label] = front @ direct_sum_decomposed[label]
 
                 multiplication_sum_premature = sum(multiplication_result.values())
-                front_empty = scipy.sparse.dok_matrix(
+                front_empty = mtx_type_matrix(
                     (1, len(dfa.states) + len(nfa.states)), dtype=int
                 )
                 front_premature = (
@@ -119,7 +124,7 @@ def bfs_two_graph(dfa, nfa, common_labels, option=False):
                                 ):
                                     transition_labels_dfa.add(label)
 
-                multiplication_sum = scipy.sparse.dok_matrix(
+                multiplication_sum = mtx_type_matrix(
                     (1, len(dfa.states) + len(nfa.states)), dtype=int
                 )
                 for label in transition_labels_dfa:
